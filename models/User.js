@@ -7,7 +7,12 @@ const useSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    maxlength: 5,
+    maxlength: 50,
+    trim: true,
+  },
+  wallet: {
+    type: String,
+    maxlength: 100,
   },
   lastName: {
     type: String,
