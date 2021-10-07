@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
+
 const userSchema = mongoose.Schema({
   name: {
     type: String,
@@ -70,7 +71,20 @@ userSchema.methods.generateToken = function (cb) {
 
 userSchema.methods.findByToken = function (token, cb) {
   var user = this;
-  jwt.verify(token);
+  jwt.verify(token, "secretToken", function (err, decoded) {
+    // 유저아이디를 이용한 유저 확인
+    // 클라이언트에 보관된 토큰을 확인후 일치 비교
+    user.findOne(
+      {
+        _id: decode,
+        token: token,
+      },
+      function (err, user) {
+        if (err) return cb(err);
+        cb(null, user);
+      }
+    );
+  });
 };
 
 const User = mongoose.model("User", userSchema);

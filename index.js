@@ -25,7 +25,8 @@ app.get("/api/demodata", (req, res) => {
   res.send("반갑습네다 동무");
 });
 
-// app.use(cookieParser());
+// 회원가입
+app.use(cookieParser());
 app.post("/register", (req, res) => {
   const user = new User(req.body);
   user.save((err, userInfo) => {
@@ -35,10 +36,10 @@ app.post("/register", (req, res) => {
     });
   });
 });
-
+// 로그인
 app.post("/api/users/login", (req, res) => {
   // DB에서 요청된 이메일을 찾는다.
-  User.findOne({ email: request.body.email }, (err, user) => {
+  User.findOne({ email: req.body.email }, (err, user) => {
     if (!user) {
       return res.json({
         loginSuccess: false,
@@ -48,15 +49,15 @@ app.post("/api/users/login", (req, res) => {
     // 비밀번호 매칭확인
     user.comparePassword(req.body.password, (err, isMatch) => {
       if (!isMatch) return res.json({ loginSuccess: false, message: "비밀번호가 틀렸습니다." });
-    });
-    // password가 맞다면 토큰 전송
-    user.generateToken((err, user) => {
-      if (err) return res.status(400).send(err);
-      res.cookie("x_auth", user.token).status(200).json({ loginSuccess: true, userId: user._id });
+      // password가 맞다면 토큰 전송
+      user.generateToken((err, user) => {
+        if (err) return res.status(400).send(err);
+        res.cookie("x_auth", user.token).status(200).json({ loginSuccess: true, userId: user._id });
+      });
     });
   });
 });
-
+// auth 확인
 // 여기까지 통과했다는건 auth가 true
 app.get("/api/users/auth", auth, (req, res) => {
   res.status(200).json({
